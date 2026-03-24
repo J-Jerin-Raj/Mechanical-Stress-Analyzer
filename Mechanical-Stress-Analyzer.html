@@ -170,6 +170,7 @@
           </div>
         </div>
       </div>
+      
       <!-- TAB: RESULTS -->
       <div class="tab-content" id="tab-results">
         <div id="verdictBox"></div>
@@ -212,6 +213,46 @@
             <div class="rc-unit">L/r</div>
           </div>
         </div>
+      </div>
+
+       <!-- TAB: MATRIX -->
+      <div class="tab-content" id="tab-matrix">
+        <div class="matrix-wrap">
+          <div class="matrix-title">GLOBAL STIFFNESS MATRIX [K] — 4×4 (Beam Element, EI/L³ factored)</div>
+          <div id="matrixDisplay"></div>
+        </div>
+        <div class="matrix-wrap">
+          <div class="matrix-title">EIGENVALUES — Characteristic Equation: det([K] − λ[I]) = 0</div>
+          <div class="eigen-list" id="eigenList"></div>
+        </div>
+      </div>
+
+      <!-- TAB: STEPS -->
+      <div class="tab-content" id="tab-steps">
+        <div class="steps-list" id="stepsList"></div>
+      </div>
+
+      <!-- TAB: COMPARE -->
+      <div class="tab-content" id="tab-compare">
+        <div style="margin-bottom:16px;">
+          <div class="section-label">Theory vs FEA Comparison</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px;">
+            FEA values are simulated with realistic model assumptions (mesh density factor, stress concentration,
+            boundary condition stiffness). Percentage error reflects expected real-world deviation.
+          </p>
+        </div>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>PARAMETER</th>
+              <th>ANALYTICAL (Theory)</th>
+              <th>FEA (Simulated)</th>
+              <th>% ERROR</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="compTable"></tbody>
+        </table>
       </div>
 
     </div><!-- panel-right -->
