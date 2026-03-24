@@ -130,6 +130,47 @@
         <div class="tab" onclick="showTab('compare')">THEORY vs FEA</div>
       </div>
 
+       <!-- TAB: VIZ -->
+      <div class="tab-content active" id="tab-viz">
+        <div class="viz-area">
+          <div class="viz-label">BRACKET DIAGRAM — REAL-TIME GEOMETRY PREVIEW</div>
+          <svg id="bracketSVG" viewBox="0 0 700 280"></svg>
+        </div>
+        <div class="results-grid" id="quickCards">
+          <div class="result-card cyan">
+            <div class="rc-label">CRITICAL BUCKLING LOAD</div>
+            <div class="rc-value cyan" id="qv1">—</div>
+            <div class="rc-unit">N (P_cr)</div>
+          </div>
+          <div class="result-card violet">
+            <div class="rc-label">NATURAL FREQUENCY</div>
+            <div class="rc-value violet" id="qv2">—</div>
+            <div class="rc-unit">Hz (f_n)</div>
+          </div>
+          <div class="result-card orange">
+            <div class="rc-label">VON MISES STRESS</div>
+            <div class="rc-value orange" id="qv3">—</div>
+            <div class="rc-unit">MPa (σ_vm)</div>
+          </div>
+          <div class="result-card green">
+            <div class="rc-label">FACTOR OF SAFETY</div>
+            <div class="rc-value green" id="qv4">—</div>
+            <div class="rc-unit">FOS</div>
+            <div class="rc-status" id="qst4"></div>
+          </div>
+          <div class="result-card yellow">
+            <div class="rc-label">MAX DISPLACEMENT</div>
+            <div class="rc-value yellow" id="qv5">—</div>
+            <div class="rc-unit">mm (δ_max)</div>
+          </div>
+          <div class="result-card red">
+            <div class="rc-label">MIN EIGENVALUE λ₁</div>
+            <div class="rc-value red" id="qv6">—</div>
+            <div class="rc-unit">(×10⁶ N·m)</div>
+          </div>
+        </div>
+      </div>
+      
     </div><!-- panel-right -->
   </div><!-- main -->
 
