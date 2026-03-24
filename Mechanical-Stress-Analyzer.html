@@ -170,7 +170,50 @@
           </div>
         </div>
       </div>
-      
+      <!-- TAB: RESULTS -->
+      <div class="tab-content" id="tab-results">
+        <div id="verdictBox"></div>
+        <div class="stress-meter">
+          <div class="sm-title">VON MISES STRESS METER — % OF YIELD STRENGTH</div>
+          <div class="sm-bar-wrap">
+            <div class="sm-needle" id="smNeedle" style="left:5%"></div>
+          </div>
+          <div class="sm-labels"><span>0 MPa</span><span id="smYield">—</span><span>2× Yield</span></div>
+        </div>
+        <div class="results-grid">
+          <div class="result-card cyan">
+            <div class="rc-label">MOMENT OF INERTIA</div>
+            <div class="rc-value cyan" id="rv1">—</div>
+            <div class="rc-unit">mm⁴ (I)</div>
+          </div>
+          <div class="result-card violet">
+            <div class="rc-label">SECTION MODULUS</div>
+            <div class="rc-value violet" id="rv2">—</div>
+            <div class="rc-unit">mm³ (Z)</div>
+          </div>
+          <div class="result-card orange">
+            <div class="rc-label">BENDING STRESS</div>
+            <div class="rc-value orange" id="rv3">—</div>
+            <div class="rc-unit">MPa (σ_b)</div>
+          </div>
+          <div class="result-card green">
+            <div class="rc-label">SHEAR STRESS</div>
+            <div class="rc-value green" id="rv4">—</div>
+            <div class="rc-unit">MPa (τ)</div>
+          </div>
+          <div class="result-card yellow">
+            <div class="rc-label">EULER BUCKLING (P_E)</div>
+            <div class="rc-value yellow" id="rv5">—</div>
+            <div class="rc-unit">N</div>
+          </div>
+          <div class="result-card red">
+            <div class="rc-label">SLENDERNESS RATIO</div>
+            <div class="rc-value red" id="rv6">—</div>
+            <div class="rc-unit">L/r</div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- panel-right -->
   </div><!-- main -->
 
