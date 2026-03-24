@@ -120,6 +120,17 @@
       <button class="analyse-btn" onclick="runAnalysis()">▶ RUN ANALYSIS</button>
     </div>
 
+    <!-- RIGHT: OUTPUT -->
+    <div class="panel-right">
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('viz')">VISUALISATION</div>
+        <div class="tab" onclick="showTab('results')">RESULTS</div>
+        <div class="tab" onclick="showTab('matrix')">STIFFNESS MATRIX</div>
+        <div class="tab" onclick="showTab('steps')">CALCULATION STEPS</div>
+        <div class="tab" onclick="showTab('compare')">THEORY vs FEA</div>
+      </div>
+
+    </div><!-- panel-right -->
   </div><!-- main -->
 
   <script src="script.js"></script>
