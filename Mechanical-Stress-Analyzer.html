@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BracketSAE — Stress Analysis Engine</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚙</div>
+      <div>
+        <div class="logo-text">BracketSAE</div>
+        <div class="logo-sub">STRESS ANALYSIS ENGINE</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="badge">MICRO PROJECT 12</span>
+      <span class="version-tag">v2.1.0</span>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero-strip">
+    <div class="hero-title">Department of Mechanical Engineering</div>
+    <div class="hero-h1">Bracket Stress Analysis<br>using Eigenvalues</div>
+    <div class="hero-desc">Analytical stiffness matrix formulation · Eigenvalue extraction · FEA comparison · Von Mises
+      failure evaluation</div>
+    <div class="co-tags">
+      <span class="co-tag co1">CO1 — Matrix Analysis</span>
+      <span class="co-tag co2">CO2 — Stress Analysis</span>
+      <span class="co-tag co4">CO4 — FEA Evaluation</span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT: INPUTS -->
+    <div class="panel-left">
+
+      <div class="section-label">Bracket Geometry</div>
+
+      <div class="input-group">
+        <div class="input-label">Arm Length (L₁) <span class="input-unit">mm</span></div>
+        <input type="range" id="L1" min="80" max="400" value="200" oninput="updateRange('L1','vL1')" />
+        <span class="range-val" id="vL1">200 mm</span>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Arm Height (L₂) <span class="input-unit">mm</span></div>
+        <input type="range" id="L2" min="60" max="300" value="150" oninput="updateRange('L2','vL2')" />
+        <span class="range-val" id="vL2">150 mm</span>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Width (b) <span class="input-unit">mm</span></div>
+        <input type="range" id="BW" min="20" max="80" value="40" oninput="updateRange('BW','vBW')" />
+        <span class="range-val" id="vBW">40 mm</span>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Thickness (t) <span class="input-unit">mm</span></div>
+        <input type="range" id="TH" min="4" max="30" value="8" oninput="updateRange('TH','vTH')" />
+        <span class="range-val" id="vTH">8 mm</span>
+      </div>
+
+      <div class="section-label">Material</div>
+      <div class="input-group">
+        <select id="material" onchange="updateMat()">
+          <option value="steel">Structural Steel IS 2062 — E=200 GPa</option>
+          <option value="alum">Aluminium Alloy 6061-T6 — E=69 GPa</option>
+          <option value="ss">Stainless Steel 304 — E=193 GPa</option>
+          <option value="ci">Cast Iron (Grey) — E=100 GPa</option>
+        </select>
+      </div>
+
+      <div class="section-label">Loading Configuration</div>
+      <div class="load-type-grid">
+        <div class="load-btn active" id="lt0" onclick="setLoad(0)"><span class="lb-icon">⬇</span>Axial<br>Compression
+        </div>
+        <div class="load-btn" id="lt1" onclick="setLoad(1)"><span class="lb-icon">↙</span>Transverse<br>Shear</div>
+        <div class="load-btn" id="lt2" onclick="setLoad(2)"><span class="lb-icon">↺</span>Combined<br>Bending+Torsion
+        </div>
+        <div class="load-btn" id="lt3" onclick="setLoad(3)"><span class="lb-icon">〜</span>Dynamic<br>Cyclic</div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Applied Load (F) <span class="input-unit">N</span></div>
+        <input type="range" id="LOAD" min="500" max="20000" value="5000" step="100"
+          oninput="updateRange('LOAD','vLOAD')" />
+        <span class="range-val" id="vLOAD">5000 N</span>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Safety Factor Target</div>
+        <select id="sfTarget">
+          <option value="1.5">1.5 — Aerospace (weight-critical)</option>
+          <option value="2.0" selected>2.0 — Industrial standard</option>
+          <option value="2.5">2.5 — Heavy machinery</option>
+          <option value="3.0">3.0 — Public structures</option>
+        </select>
+      </div>
+
+      <button class="analyse-btn" onclick="runAnalysis()">▶ RUN ANALYSIS</button>
+    </div>
+
+  </div><!-- main -->
+
+  <script src="script.js"></script>
+</body>
+
+</html>
