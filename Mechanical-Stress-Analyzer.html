@@ -130,6 +130,131 @@
         <div class="tab" onclick="showTab('compare')">THEORY vs FEA</div>
       </div>
 
+      <!-- TAB: VIZ -->
+      <div class="tab-content active" id="tab-viz">
+        <div class="viz-area">
+          <div class="viz-label">BRACKET DIAGRAM — REAL-TIME GEOMETRY PREVIEW</div>
+          <svg id="bracketSVG" viewBox="0 0 700 280"></svg>
+        </div>
+        <div class="results-grid" id="quickCards">
+          <div class="result-card cyan">
+            <div class="rc-label">CRITICAL BUCKLING LOAD</div>
+            <div class="rc-value cyan" id="qv1">—</div>
+            <div class="rc-unit">N (P_cr)</div>
+          </div>
+          <div class="result-card violet">
+            <div class="rc-label">NATURAL FREQUENCY</div>
+            <div class="rc-value violet" id="qv2">—</div>
+            <div class="rc-unit">Hz (f_n)</div>
+          </div>
+          <div class="result-card orange">
+            <div class="rc-label">VON MISES STRESS</div>
+            <div class="rc-value orange" id="qv3">—</div>
+            <div class="rc-unit">MPa (σ_vm)</div>
+          </div>
+          <div class="result-card green">
+            <div class="rc-label">FACTOR OF SAFETY</div>
+            <div class="rc-value green" id="qv4">—</div>
+            <div class="rc-unit">FOS</div>
+            <div class="rc-status" id="qst4"></div>
+          </div>
+          <div class="result-card yellow">
+            <div class="rc-label">MAX DISPLACEMENT</div>
+            <div class="rc-value yellow" id="qv5">—</div>
+            <div class="rc-unit">mm (δ_max)</div>
+          </div>
+          <div class="result-card red">
+            <div class="rc-label">MIN EIGENVALUE λ₁</div>
+            <div class="rc-value red" id="qv6">—</div>
+            <div class="rc-unit">(×10⁶ N·m)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: RESULTS -->
+      <div class="tab-content" id="tab-results">
+        <div id="verdictBox"></div>
+        <div class="stress-meter">
+          <div class="sm-title">VON MISES STRESS METER — % OF YIELD STRENGTH</div>
+          <div class="sm-bar-wrap">
+            <div class="sm-needle" id="smNeedle" style="left:5%"></div>
+          </div>
+          <div class="sm-labels"><span>0 MPa</span><span id="smYield">—</span><span>2× Yield</span></div>
+        </div>
+        <div class="results-grid">
+          <div class="result-card cyan">
+            <div class="rc-label">MOMENT OF INERTIA</div>
+            <div class="rc-value cyan" id="rv1">—</div>
+            <div class="rc-unit">mm⁴ (I)</div>
+          </div>
+          <div class="result-card violet">
+            <div class="rc-label">SECTION MODULUS</div>
+            <div class="rc-value violet" id="rv2">—</div>
+            <div class="rc-unit">mm³ (Z)</div>
+          </div>
+          <div class="result-card orange">
+            <div class="rc-label">BENDING STRESS</div>
+            <div class="rc-value orange" id="rv3">—</div>
+            <div class="rc-unit">MPa (σ_b)</div>
+          </div>
+          <div class="result-card green">
+            <div class="rc-label">SHEAR STRESS</div>
+            <div class="rc-value green" id="rv4">—</div>
+            <div class="rc-unit">MPa (τ)</div>
+          </div>
+          <div class="result-card yellow">
+            <div class="rc-label">EULER BUCKLING (P_E)</div>
+            <div class="rc-value yellow" id="rv5">—</div>
+            <div class="rc-unit">N</div>
+          </div>
+          <div class="result-card red">
+            <div class="rc-label">SLENDERNESS RATIO</div>
+            <div class="rc-value red" id="rv6">—</div>
+            <div class="rc-unit">L/r</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: MATRIX -->
+      <div class="tab-content" id="tab-matrix">
+        <div class="matrix-wrap">
+          <div class="matrix-title">GLOBAL STIFFNESS MATRIX [K] — 4×4 (Beam Element, EI/L³ factored)</div>
+          <div id="matrixDisplay"></div>
+        </div>
+        <div class="matrix-wrap">
+          <div class="matrix-title">EIGENVALUES — Characteristic Equation: det([K] − λ[I]) = 0</div>
+          <div class="eigen-list" id="eigenList"></div>
+        </div>
+      </div>
+
+      <!-- TAB: STEPS -->
+      <div class="tab-content" id="tab-steps">
+        <div class="steps-list" id="stepsList"></div>
+      </div>
+
+      <!-- TAB: COMPARE -->
+      <div class="tab-content" id="tab-compare">
+        <div style="margin-bottom:16px;">
+          <div class="section-label">Theory vs FEA Comparison</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px;">
+            FEA values are simulated with realistic model assumptions (mesh density factor, stress concentration,
+            boundary condition stiffness). Percentage error reflects expected real-world deviation.
+          </p>
+        </div>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>PARAMETER</th>
+              <th>ANALYTICAL (Theory)</th>
+              <th>FEA (Simulated)</th>
+              <th>% ERROR</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="compTable"></tbody>
+        </table>
+      </div>
+
     </div><!-- panel-right -->
   </div><!-- main -->
 
