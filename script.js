@@ -238,6 +238,35 @@ function renderAll() {
     const ratio = Math.min(R.vonMises / (R.mat.sy * 2), 1) * 100;
     document.getElementById('smNeedle').style.left = ratio + '%';
     document.getElementById('smYield').textContent = R.mat.sy + ' MPa (Yield)';
+
+    // Verdict
+    let vclass, vicon, vtitle, vdesc;
+    if (R.FOS >= R.sfT) {
+        vclass = 'safe'; vicon = '✅'; vtitle = 'BRACKET IS SAFE';
+        vdesc = `Factor of Safety = ${R.FOS.toFixed(2)} ≥ ${R.sfT} (target). Von Mises stress ${R.vonMises.toFixed(1)} MPa is within the yield limit of ${R.mat.sy} MPa for ${R.mat.name}.`;
+    }
+    else if (R.FOS >= 1) {
+        vclass = 'warning'; vicon = '⚠️'; vtitle = 'MARGINAL — REDESIGN RECOMMENDED';
+        vdesc = `FOS = ${R.FOS.toFixed(2)} is below target ${R.sfT} but above 1.0. Bracket may yield under repeated loading. Consider increasing thickness or reducing arm length.`;
+    }
+    else {
+        vclass = 'danger'; vicon = '🚨'; vtitle = 'FAILURE PREDICTED';
+        vdesc = `FOS = ${R.FOS.toFixed(2)} < 1.0. Von Mises stress ${R.vonMises.toFixed(1)} MPa exceeds yield strength ${R.mat.sy} MPa. Immediate redesign required.`;
+    }
+
+    document.getElementById('verdictBox').innerHTML = `
+    <div class="verdict-box ${vclass} fade-in">
+      <div class="verdict-icon">${vicon}</div>
+      <div><div class="verdict-title">${vtitle}</div><div class="verdict-desc">${vdesc}</div></div>
+    </div>`;
+
+    // Detail cards
+    document.getElementById('rv1').textContent = (R.I * 1e12).toFixed(2);
+    document.getElementById('rv2').textContent = (R.Z * 1e9).toFixed(2);
+    document.getElementById('rv3').textContent = R.sigB.toFixed(2);
+    document.getElementById('rv4').textContent = R.tau.toFixed(2);
+    document.getElementById('rv5').textContent = fmt(R.Pcr);
+    document.getElementById('rv6').textContent = R.Lr.toFixed(1);
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────────
