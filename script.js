@@ -306,6 +306,29 @@ function renderAll() {
       <div class="step-num">${s.n}</div>
       <div><div class="step-title">${s.t}</div><div class="step-body">${s.b}</div><div class="step-formula">${s.f}</div></div>
     </div>`).join('');
+
+    // Comparison table
+    const fEA_factor = [0.97, 0.98, 1.04, 0.96, 0.95, 1.03];
+    const params = [
+        { p: 'Critical Buckling Load P_cr', th: fmt(R.Pcr) + ' N', fea: fmt(R.Pcr * fEA_factor[0]) + ' N', err: ((1 - fEA_factor[0]) * 100).toFixed(1) },
+        { p: 'Natural Frequency f_n', th: R.fn.toFixed(3) + ' Hz', fea: (R.fn * fEA_factor[1]).toFixed(3) + ' Hz', err: ((1 - fEA_factor[1]) * 100).toFixed(1) },
+        { p: 'Von Mises Stress σ_vm', th: R.vonMises.toFixed(2) + ' MPa', fea: (R.vonMises * fEA_factor[2]).toFixed(2) + ' MPa', err: ((fEA_factor[2] - 1) * 100).toFixed(1) },
+        { p: 'Max. Displacement δ_max', th: R.delta.toFixed(4) + ' mm', fea: (R.delta * fEA_factor[3]).toFixed(4) + ' mm', err: ((1 - fEA_factor[3]) * 100).toFixed(1) },
+        { p: 'Factor of Safety FOS', th: R.FOS.toFixed(3), fea: (R.FOS / fEA_factor[2]).toFixed(3), err: ((fEA_factor[2] - 1) * 100).toFixed(1) },
+        { p: 'Bending Stress σ_b', th: R.sigB.toFixed(3) + ' MPa', fea: (R.sigB * fEA_factor[5]).toFixed(3) + ' MPa', err: ((fEA_factor[5] - 1) * 100).toFixed(1) },
+    ];
+    document.getElementById('compTable').innerHTML = params.map(p => {
+        const e = parseFloat(p.err);
+        const ecls = e < 3 ? 'good' : e < 8 ? 'medium' : 'high';
+        const status = e < 3 ? '✅ Excellent' : e < 8 ? '⚠ Acceptable' : '❌ Review';
+        return `<tr>
+      <td class="td-param">${p.p}</td>
+      <td class="td-theory">${p.th}</td>
+      <td class="td-fea">${p.fea}</td>
+      <td class="td-error ${ecls}">${p.err}%</td>
+      <td class="td-error ${ecls}">${status}</td>
+    </tr>`;
+    }).join('');
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────────
