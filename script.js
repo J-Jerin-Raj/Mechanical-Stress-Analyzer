@@ -267,6 +267,45 @@ function renderAll() {
     document.getElementById('rv4').textContent = R.tau.toFixed(2);
     document.getElementById('rv5').textContent = fmt(R.Pcr);
     document.getElementById('rv6').textContent = R.Lr.toFixed(1);
+
+    // Matrix
+    const EIL3 = R.EIL3, L = R.L1;
+    const K = R.k;
+    let mgrid = `<div class="matrix-grid" style="grid-template-columns:repeat(4,1fr)">`;
+    K.forEach((row, ri) => row.forEach((v, ci) => {
+        const norm = v / EIL3;
+        const cls = Math.abs(norm) < 0.01 ? 'zero' : (ri === ci ? 'highlight' : '');
+        mgrid += `<div class="m-cell ${cls}">${fmt(v / 1e6, 3)}</div>`;
+    }));
+    mgrid += '</div>';
+    mgrid += `<p style="font-size:11px;color:var(--muted);margin-top:12px;font-family:'JetBrains Mono',monospace;">Values in ×10⁶ N/m · EI/L³ = ${(EIL3 / 1e6).toFixed(3)} ×10⁶ N/m</p>`;
+    document.getElementById('matrixDisplay').innerHTML = mgrid;
+
+    // Eigenvalues
+    const eigs = [R.lam1, R.lam2, R.lam1 * 3.5, R.lam1 * 8.9];
+    const maxE = eigs[3];
+    document.getElementById('eigenList').innerHTML = eigs.map((e, i) => `
+    <div class="eigen-item fade-in" style="animation-delay:${i * 0.1}s">
+      <span class="eigen-badge">λ${i + 1}</span>
+      <span class="eigen-val">${(e / 1e6).toFixed(4)} ×10⁶</span>
+      <div class="eigen-bar"><div class="eigen-bar-fill" style="width:${(e / maxE * 100).toFixed(1)}%"></div></div>
+      <span class="eigen-interp">${i === 0 ? `P_cr = ${fmt(R.Pcr)} N<br>f_n = ${R.fn.toFixed(2)} Hz` : i === 1 ? '2nd mode<br>buckling' : 'Higher<br>mode'}</span>
+    </div>`).join('');
+
+    // Steps
+    const steps = [
+        { n: '1', t: 'Cross-Section Properties', b: `Width b = ${(R.b * 1000).toFixed(0)} mm,  Thickness t = ${(R.t * 1000).toFixed(0)} mm`, f: `I = bt³/12 = ${(R.I * 1e12).toFixed(2)} ×10⁻¹² m⁴\nA = bt = ${(R.A * 1e6).toFixed(2)} ×10⁻⁶ m²\nZ = I/(t/2) = ${(R.Z * 1e9).toFixed(2)} ×10⁻⁹ m³\nr = √(I/A) = ${(R.r * 1000).toFixed(4)} mm` },
+        { n: '2', t: 'Applied Loading Analysis', b: `Load F = ${R.F} N,  Arm Length L = ${(R.L1 * 1000).toFixed(0)} mm`, f: `Bending Moment M = F×L = ${(R.F * R.L1).toFixed(2)} N·m\nBending Stress σ_b = M/Z = ${R.sigB.toFixed(3)} MPa\nShear Stress τ = 1.5F/A = ${R.tau.toFixed(3)} MPa` },
+        { n: '3', t: 'Von Mises Failure Criterion', b: `Principal stress combination`, f: `σ_vm = √(σ_b² + 3τ²)\n       = √(${(R.sigB * R.sigB).toFixed(2)} + 3×${(R.tau * R.tau).toFixed(2)})\n       = ${R.vonMises.toFixed(3)} MPa\n\nYield Strength σ_y = ${R.mat.sy} MPa\nFactor of Safety = ${R.mat.sy}/${R.vonMises.toFixed(2)} = ${R.FOS.toFixed(3)}` },
+        { n: '4', t: 'Stiffness Matrix Assembly', b: `2-node beam element, EI/L³ = ${(R.EIL3 / 1e6).toFixed(3)} ×10⁶`, f: `[K] = EI/L³ × [12, 6L, -12, 6L; 6L, 4L², -6L, 2L²;\n                   -12, -6L, 12, -6L; 6L, 2L², -6L, 4L²]` },
+        { n: '5', t: 'Eigenvalue Extraction', b: `Reduced [K_r] after applying BC (fixed end)`, f: `det([K_r] − λ[I]) = 0\nλ₁ = ${(R.lam1 / 1e6).toFixed(4)} ×10⁶ N/m  (critical)\nλ₂ = ${(R.lam2 / 1e6).toFixed(4)} ×10⁶ N/m` },
+        { n: '6', t: 'Critical Buckling Load & Natural Frequency', b: `From eigenvalue and Euler formula`, f: `P_cr (Euler) = π²EI/(4L²) = ${fmt(R.Pcr)} N\nω_n = √(λ₁/m) = ${(Math.sqrt(Math.abs(R.lam1 / R.mass))).toFixed(2)} rad/s\nf_n = ω_n/2π = ${R.fn.toFixed(3)} Hz\nδ_max = FL³/3EI = ${R.delta.toFixed(4)} mm` }
+    ];
+    document.getElementById('stepsList').innerHTML = steps.map(s => `
+    <div class="step-item fade-in">
+      <div class="step-num">${s.n}</div>
+      <div><div class="step-title">${s.t}</div><div class="step-body">${s.b}</div><div class="step-formula">${s.f}</div></div>
+    </div>`).join('');
 }
 
 // ── INIT ────────────────────────────────────────────────────────────────────
