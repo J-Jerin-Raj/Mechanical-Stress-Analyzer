@@ -135,3 +135,70 @@ function drawLoadArrow(ox, oy, sL1, sTH) {
     <path d="M${lx},${ly - arrowLen} Q${lx + 30},${ly - arrowLen / 2} ${lx},${ly}" fill="none" stroke="#ff6b35" stroke-width="2" stroke-dasharray="5,3"/>
     <text x="${lx + 35}" y="${ly - arrowLen / 2}" fill="#ff6b35" font-size="10" font-family="JetBrains Mono">~F</text>`;
 }
+
+// ── CORE CALCULATION ─────────────────────────────────────────────────────────
+function compute() {
+    const L1 = +document.getElementById('L1').value / 1000; // m
+    const L2 = +document.getElementById('L2').value / 1000;
+    const b = +document.getElementById('BW').value / 1000;
+    const t = +document.getElementById('TH').value / 1000;
+    const F = +document.getElementById('LOAD').value;
+    const mat = MAT[document.getElementById('material').value];
+    const sfT = +document.getElementById('sfTarget').value;
+    const E = mat.E * 1e6; // Pa (E in MPa → Pa)
+    const L = L1;
+
+    const I = (b * Math.pow(t, 3)) / 12;        // m⁴ (approx, simplified)
+    const A = b * t;
+    const Z = I / (t / 2);
+    const r = Math.sqrt(I / A);
+
+    // Bending stress at fixed end
+    const M = F * L;
+    const sigB = M / Z / 1e6;           // MPa
+
+    // Shear stress
+    const tau = (1.5 * F / A) / 1e6;    // MPa
+
+    // Von Mises
+    const vm = Math.sqrt(sigB * sigB + 3 * tau * tau);
+
+    // Euler buckling (fixed-free)
+    const Pcr = (Math.PI * Math.PI * E * I) / (4 * L * L);
+
+    // Slenderness
+    const Lr = L / r;
+
+    // Stiffness (EI/L^3)
+    const EIL3 = E * I / (L * L * L);
+    const k = [
+        [12 * EIL3, 6 * L * EIL3, -12 * EIL3, 6 * L * EIL3],
+        [6 * L * EIL3, 4 * L * L * EIL3, -6 * L * EIL3, 2 * L * L * EIL3],
+        [-12 * EIL3, -6 * L * EIL3, 12 * EIL3, -6 * L * EIL3],
+        [6 * L * EIL3, 2 * L * L * EIL3, -6 * L * EIL3, 4 * L * L * EIL3]
+    ];
+
+    // Reduced 2x2 (after BC: node 1 fixed → DOF 1,2 = 0)
+    const kr = [[k[2][2], k[2][3]], [k[3][2], k[3][3]]];
+    // Eigenvalues of 2x2 symmetric matrix
+    const a = kr[0][0], d = kr[1][1], bc = kr[0][1];
+    const tr2 = (a + d) / 2, det2 = a * d - bc * bc;
+    const disc = Math.sqrt(Math.max(0, tr2 * tr2 - det2));
+    const lam1 = tr2 - disc, lam2 = tr2 + disc;
+
+    // Natural frequency from smallest eigenvalue (modal: ω²=λ/m)
+    const mass = mat.rho * A * L;
+    const omega = Math.sqrt(Math.max(0, lam1 / mass));
+    const fn = omega / (2 * Math.PI);
+
+    // Deflection (cantilever: δ=FL³/3EI)
+    const delta = (F * Math.pow(L, 3)) / (3 * E * I) * 1000; // mm
+
+    const FOS = mat.sy / vm;
+
+    return {
+        L1, L2, b, t, F, mat, sfT, E, I, A, Z, r,
+        sigB, tau, vonMises: vm, Pcr, Lr,
+        k, lam1, lam2, fn, delta, FOS, mass, EIL3
+    };
+}
