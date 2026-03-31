@@ -202,3 +202,21 @@ function compute() {
         k, lam1, lam2, fn, delta, FOS, mass, EIL3
     };
 }
+
+// ── RUN ANALYSIS ────────────────────────────────────────────────────────────
+function runAnalysis() {
+    const loader = document.getElementById('loader');
+    loader.classList.add('show');
+    setTimeout(() => {
+        results = compute();
+        renderAll();
+        loader.classList.remove('show');
+        drawBracket();
+    }, 1200);
+}
+
+function fmt(v, d = 2) {
+    if (Math.abs(v) >= 1e6) return (v / 1e6).toFixed(d) + 'M';
+    if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(d) + 'k';
+    return v.toFixed(d);
+}
