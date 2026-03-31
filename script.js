@@ -220,3 +220,25 @@ function fmt(v, d = 2) {
     if (Math.abs(v) >= 1e3) return (v / 1e3).toFixed(d) + 'k';
     return v.toFixed(d);
 }
+
+function renderAll() {
+    const R = results;
+    // Quick cards
+    document.getElementById('qv1').textContent = fmt(R.Pcr);
+    document.getElementById('qv2').textContent = R.fn.toFixed(2);
+    document.getElementById('qv3').textContent = R.vonMises.toFixed(2);
+    document.getElementById('qv4').textContent = R.FOS.toFixed(2);
+    document.getElementById('qv5').textContent = R.delta.toFixed(3);
+    document.getElementById('qv6').textContent = (R.lam1 / 1e6).toFixed(3);
+
+    const s4 = document.getElementById('qst4');
+    s4.className = 'rc-status ' + (R.FOS >= R.sfT ? 'safe' : R.FOS >= 1 ? 'warn' : 'danger');
+
+    // Stress meter
+    const ratio = Math.min(R.vonMises / (R.mat.sy * 2), 1) * 100;
+    document.getElementById('smNeedle').style.left = ratio + '%';
+    document.getElementById('smYield').textContent = R.mat.sy + ' MPa (Yield)';
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+drawBracket();
