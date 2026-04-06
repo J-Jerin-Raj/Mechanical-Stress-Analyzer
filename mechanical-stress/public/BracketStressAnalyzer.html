@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BracketSAE — Stress Analysis Engine</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">COMPUTING EIGENVALUES…</div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚙</div>
+      <div>
+        <div class="logo-text">BracketSAE</div>
+        <div class="logo-sub">STRESS ANALYSIS ENGINE</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="badge">MICRO PROJECT 12</span>
+      <span class="version-tag">v2.1.0</span>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero-strip">
+    <div class="hero-title">Department of Mechanical Engineering</div>
+    <div class="hero-h1">Bracket Stress Analysis<br>using Eigenvalues</div>
+    <div class="hero-desc">Analytical stiffness matrix formulation · Eigenvalue extraction · FEA comparison · Von Mises
+      failure evaluation</div>
+    <div class="co-tags">
+      <span class="co-tag co1">CO1 — Matrix Analysis</span>
+      <span class="co-tag co2">CO2 — Stress Analysis</span>
+      <span class="co-tag co4">CO4 — FEA Evaluation</span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT: INPUTS -->
+    <div class="panel-left">
+
+      <div class="section-label">Bracket Geometry</div>
+
+      <div class="input-group">
+        <div class="input-label">Arm Length (L₁) <span class="input-unit">mm</span></div>
+        <input type="range" id="L1" min="80" max="400" value="200" oninput="updateRange('L1','vL1')" />
+        <span class="range-val" id="vL1">200 mm</span>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Arm Height (L₂) <span class="input-unit">mm</span></div>
+        <input type="range" id="L2" min="60" max="300" value="150" oninput="updateRange('L2','vL2')" />
+        <span class="range-val" id="vL2">150 mm</span>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Width (b) <span class="input-unit">mm</span></div>
+        <input type="range" id="BW" min="20" max="80" value="40" oninput="updateRange('BW','vBW')" />
+        <span class="range-val" id="vBW">40 mm</span>
+      </div>
+      <div class="input-group">
+        <div class="input-label">Thickness (t) <span class="input-unit">mm</span></div>
+        <input type="range" id="TH" min="4" max="30" value="8" oninput="updateRange('TH','vTH')" />
+        <span class="range-val" id="vTH">8 mm</span>
+      </div>
+
+      <div class="section-label">Material</div>
+      <div class="input-group">
+        <select id="material" onchange="updateMat()">
+          <option value="steel">Structural Steel IS 2062 — E=200 GPa</option>
+          <option value="alum">Aluminium Alloy 6061-T6 — E=69 GPa</option>
+          <option value="ss">Stainless Steel 304 — E=193 GPa</option>
+          <option value="ci">Cast Iron (Grey) — E=100 GPa</option>
+        </select>
+      </div>
+
+      <div class="section-label">Loading Configuration</div>
+      <div class="load-type-grid">
+        <div class="load-btn active" id="lt0" onclick="setLoad(0)"><span class="lb-icon">⬇</span>Axial<br>Compression
+        </div>
+        <div class="load-btn" id="lt1" onclick="setLoad(1)"><span class="lb-icon">↙</span>Transverse<br>Shear</div>
+        <div class="load-btn" id="lt2" onclick="setLoad(2)"><span class="lb-icon">↺</span>Combined<br>Bending+Torsion
+        </div>
+        <div class="load-btn" id="lt3" onclick="setLoad(3)"><span class="lb-icon">〜</span>Dynamic<br>Cyclic</div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Applied Load (F) <span class="input-unit">N</span></div>
+        <input type="range" id="LOAD" min="500" max="20000" value="5000" step="100"
+          oninput="updateRange('LOAD','vLOAD')" />
+        <span class="range-val" id="vLOAD">5000 N</span>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Safety Factor Target</div>
+        <select id="sfTarget">
+          <option value="1.5">1.5 — Aerospace (weight-critical)</option>
+          <option value="2.0" selected>2.0 — Industrial standard</option>
+          <option value="2.5">2.5 — Heavy machinery</option>
+          <option value="3.0">3.0 — Public structures</option>
+        </select>
+      </div>
+
+      <button class="analyse-btn" onclick="runAnalysis()">▶ RUN ANALYSIS</button>
+    </div>
+
+    <!-- RIGHT: OUTPUT -->
+    <div class="panel-right">
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('viz')">VISUALISATION</div>
+        <div class="tab" onclick="showTab('results')">RESULTS</div>
+        <div class="tab" onclick="showTab('matrix')">STIFFNESS MATRIX</div>
+        <div class="tab" onclick="showTab('steps')">CALCULATION STEPS</div>
+        <div class="tab" onclick="showTab('compare')">THEORY vs FEA</div>
+      </div>
+
+      <!-- TAB: VIZ -->
+      <div class="tab-content active" id="tab-viz">
+        <div class="viz-area">
+          <div class="viz-label">BRACKET DIAGRAM — REAL-TIME GEOMETRY PREVIEW</div>
+          <svg id="bracketSVG" viewBox="0 0 700 280"></svg>
+        </div>
+        <div class="results-grid" id="quickCards">
+          <div class="result-card cyan">
+            <div class="rc-label">CRITICAL BUCKLING LOAD</div>
+            <div class="rc-value cyan" id="qv1">—</div>
+            <div class="rc-unit">N (P_cr)</div>
+          </div>
+          <div class="result-card violet">
+            <div class="rc-label">NATURAL FREQUENCY</div>
+            <div class="rc-value violet" id="qv2">—</div>
+            <div class="rc-unit">Hz (f_n)</div>
+          </div>
+          <div class="result-card orange">
+            <div class="rc-label">VON MISES STRESS</div>
+            <div class="rc-value orange" id="qv3">—</div>
+            <div class="rc-unit">MPa (σ_vm)</div>
+          </div>
+          <div class="result-card green">
+            <div class="rc-label">FACTOR OF SAFETY</div>
+            <div class="rc-value green" id="qv4">—</div>
+            <div class="rc-unit">FOS</div>
+            <div class="rc-status" id="qst4"></div>
+          </div>
+          <div class="result-card yellow">
+            <div class="rc-label">MAX DISPLACEMENT</div>
+            <div class="rc-value yellow" id="qv5">—</div>
+            <div class="rc-unit">mm (δ_max)</div>
+          </div>
+          <div class="result-card red">
+            <div class="rc-label">MIN EIGENVALUE λ₁</div>
+            <div class="rc-value red" id="qv6">—</div>
+            <div class="rc-unit">(×10⁶ N·m)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: RESULTS -->
+      <div class="tab-content" id="tab-results">
+        <div id="verdictBox"></div>
+        <div class="stress-meter">
+          <div class="sm-title">VON MISES STRESS METER — % OF YIELD STRENGTH</div>
+          <div class="sm-bar-wrap">
+            <div class="sm-needle" id="smNeedle" style="left:5%"></div>
+          </div>
+          <div class="sm-labels"><span>0 MPa</span><span id="smYield">—</span><span>2× Yield</span></div>
+        </div>
+        <div class="results-grid">
+          <div class="result-card cyan">
+            <div class="rc-label">MOMENT OF INERTIA</div>
+            <div class="rc-value cyan" id="rv1">—</div>
+            <div class="rc-unit">mm⁴ (I)</div>
+          </div>
+          <div class="result-card violet">
+            <div class="rc-label">SECTION MODULUS</div>
+            <div class="rc-value violet" id="rv2">—</div>
+            <div class="rc-unit">mm³ (Z)</div>
+          </div>
+          <div class="result-card orange">
+            <div class="rc-label">BENDING STRESS</div>
+            <div class="rc-value orange" id="rv3">—</div>
+            <div class="rc-unit">MPa (σ_b)</div>
+          </div>
+          <div class="result-card green">
+            <div class="rc-label">SHEAR STRESS</div>
+            <div class="rc-value green" id="rv4">—</div>
+            <div class="rc-unit">MPa (τ)</div>
+          </div>
+          <div class="result-card yellow">
+            <div class="rc-label">EULER BUCKLING (P_E)</div>
+            <div class="rc-value yellow" id="rv5">—</div>
+            <div class="rc-unit">N</div>
+          </div>
+          <div class="result-card red">
+            <div class="rc-label">SLENDERNESS RATIO</div>
+            <div class="rc-value red" id="rv6">—</div>
+            <div class="rc-unit">L/r</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: MATRIX -->
+      <div class="tab-content" id="tab-matrix">
+        <div class="matrix-wrap">
+          <div class="matrix-title">GLOBAL STIFFNESS MATRIX [K] — 4×4 (Beam Element, EI/L³ factored)</div>
+          <div id="matrixDisplay"></div>
+        </div>
+        <div class="matrix-wrap">
+          <div class="matrix-title">EIGENVALUES — Characteristic Equation: det([K] − λ[I]) = 0</div>
+          <div class="eigen-list" id="eigenList"></div>
+        </div>
+      </div>
+
+      <!-- TAB: STEPS -->
+      <div class="tab-content" id="tab-steps">
+        <div class="steps-list" id="stepsList"></div>
+      </div>
+
+      <!-- TAB: COMPARE -->
+      <div class="tab-content" id="tab-compare">
+        <div style="margin-bottom:16px;">
+          <div class="section-label">Theory vs FEA Comparison</div>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:16px;">
+            FEA values are simulated with realistic model assumptions (mesh density factor, stress concentration,
+            boundary condition stiffness). Percentage error reflects expected real-world deviation.
+          </p>
+        </div>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>PARAMETER</th>
+              <th>ANALYTICAL (Theory)</th>
+              <th>FEA (Simulated)</th>
+              <th>% ERROR</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody id="compTable"></tbody>
+        </table>
+      </div>
+
+    </div><!-- panel-right -->
+  </div><!-- main -->
+
+  <script src="script.js"></script>
+</body>
+
+</html>
