@@ -6,6 +6,24 @@ SUPABASE_URL = "https://your-project.supabase.co"
 SUPABASE_KEY = "your-key"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def save_to_db(input_data, results):
+    payload = {
+        "user_email": input_data["user_email"],
+        "arm_length_mm": input_data["arm_length_mm"],
+        "arm_height_mm": input_data["arm_height_mm"],
+        "width_mm": input_data["width_mm"],
+        "thickness_mm": input_data["thickness_mm"],
+        "material": input_data["material"],
+        "load_n": input_data["load_n"],
+        "load_type": input_data["load_type"],
+
+        **results  # merge computed values
+    }
+
+    response = supabase.table("your_table_name").insert(payload).execute()
+    return response
+
 # Material database (same as JS)
 MAT = {
     "steel": {"E": 200e3, "sy": 250, "rho": 7850, "name": "Structural Steel"},
@@ -75,4 +93,6 @@ def compute(data):
         "displacement_mm": displacement_mm,
         "natural_freq": natural_freq,
         "verdict": verdict,
-    }git
+    }
+
+g
