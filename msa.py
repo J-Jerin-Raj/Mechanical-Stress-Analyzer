@@ -89,6 +89,16 @@ def compute(d):
         "verdict": verdict,
     }
 
+# ── DISPLAY RESULTS ─────────────────────────────
+def display(results):
+    print("\n📊 RESULTS\n" + "-"*40)
+
+    for k, v in results.items():
+        if isinstance(v, float):
+            print(f"{k:25s}: {v:.4f}")
+        else:
+            print(f"{k:25s}: {v}")
+
 # ── MAIN ───────────────────────────────────────
 def main():
     data = get_input()
@@ -101,4 +111,4 @@ def main():
         save_to_db(data, results)
 
 if __name__ == "__main__":
-    main()git
+    main()
