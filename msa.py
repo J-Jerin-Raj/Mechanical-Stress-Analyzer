@@ -99,6 +99,13 @@ def display(results):
         else:
             print(f"{k:25s}: {v}")
 
+# ── SAVE TO SUPABASE ────────────────────────────
+def save_to_db(input_data, results):
+    payload = {**input_data, **results}
+
+    res = supabase.table("your_table_name").insert(payload).execute()
+    print("\n💾 Saved to Supabase!")
+
 # ── MAIN ───────────────────────────────────────
 def main():
     data = get_input()
