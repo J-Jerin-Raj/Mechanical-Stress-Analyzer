@@ -28,11 +28,11 @@ def auth(email,passwd):
             "password": passwd
         })
         if res.user:
-            print(f"\n✅ Logged in as {res.user.email}")
+            print(f"\nLogged in as {res.user.email}")
             return True
 
     except Exception as e:
-        print("\n❌ Login failed:", str(e))
+        print("\nLogin failed:", str(e))
         return False
     return None
     
@@ -62,6 +62,45 @@ def get_input():
     3 → Dynamic
     Select Load Type - '''))
     return data
+
+def suggest_improvements(d, r):
+    suggestions = []
+
+    fos = r["factor_of_safety"]
+    delta = r["displacement_mm"]
+    slender = r["slenderness_ratio"]
+
+    t = d["thickness_mm"]
+    L = d["arm_length_mm"]
+    mat = d["material"]
+
+    # ── SAFETY CHECK ───────────────────────
+    if fos < 1:
+        suggestions.append("FAILURE: Increase thickness significantly or reduce load immediately")
+
+    elif fos < 2:
+        suggestions.append("Increase thickness to improve Factor of Safety")
+        suggestions.append("Consider reducing arm length (L1)")
+        suggestions.append("Use stronger material (steel instead of aluminum)")
+
+    # ── DEFLECTION CHECK ───────────────────
+    if delta > 5:
+        suggestions.append("Deflection too high → Increase thickness or reduce length")
+
+    # ── SLENDERNESS (BUCKLING RISK) ────────
+    if slender > 120:
+        suggestions.append("High slenderness → Risk of buckling")
+        suggestions.append("Increase thickness OR reduce length")
+
+    # ── MATERIAL SUGGESTION ────────────────
+    if mat == "alum" and fos < 2:
+        suggestions.append("Switch to steel for higher strength")
+
+    # ── OPTIMIZATION (OVERDESIGN) ──────────
+    if fos > 4:
+        suggestions.append("Overdesigned → You can reduce thickness to save material")
+
+    return suggestions
 
 # CORE CALCULATION
 def compute(d):
@@ -121,7 +160,7 @@ def compute(d):
 
 # DISPLAY RESULTS 
 def display(results):
-    print("\n📊 RESULTS\n" + "-"*40)
+    print("\nRESULTS\n" + "-"*40)
 
     for k, v in results.items():
         if isinstance(v, float):
@@ -134,7 +173,7 @@ def save_to_db(input_data, results):
     payload = {**input_data, **results}
 
     res = supabase.table("analysis_runs").insert(payload).execute()
-    print("\n💾 Saved to Supabase!")
+    print("\nSaved to Supabase!")
 
 # MAIN
 def main():
@@ -143,8 +182,18 @@ def main():
 
     display(results)
 
+    suggestions = suggest_improvements(data, results)
+
+    print("\nDESIGN SUGGESTIONS\n" + "-"*40)
+
+    if suggestions:
+        for s in suggestions:
+            print(s)
+    else:
+        print("Design looks optimal")
+
     print("\nSaving to DB ... . .. .. .. ")
-    save_to_db(data, results)
+    # save_to_db(data, results)
 
 if __name__ == "__main__":
     main()
