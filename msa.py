@@ -1,6 +1,11 @@
 import math
 from datetime import datetime
+from supabase import create_client
 
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your-key"
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 # Material database (same as JS)
 MAT = {
     "steel": {"E": 200e3, "sy": 250, "rho": 7850, "name": "Structural Steel"},
@@ -70,4 +75,4 @@ def compute(data):
         "displacement_mm": displacement_mm,
         "natural_freq": natural_freq,
         "verdict": verdict,
-    }
+    }git
