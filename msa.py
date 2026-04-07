@@ -3,8 +3,8 @@ from datetime import datetime
 from supabase import create_client
 
 # SUPABASE CONFIG
-SUPABASE_URL = "https://ylopontyehrurbqqnnnu.supabase.co/"
-SUPABASE_KEY = "sb_publishable_ktc1IB4-v_NieYFGRwAMHQ_2WYPzIet"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your-key"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 #MATERIAL DATABASE 
@@ -97,6 +97,8 @@ def compute(d):
     fos = mat["sy"] / vm
 
     verdict = "SAFE" if fos >= 2 else "WARNING" if fos >= 1 else "FAIL"
+    I = I * 1e12
+    Z = Z * 1e9
 
     return {
         "moment_of_inertia": I,
