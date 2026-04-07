@@ -143,6 +143,7 @@ def main():
 
     display(results)
 
+    print("\nSaving to DB ... . .. .. .. ")
     save_to_db(data, results)
 
 if __name__ == "__main__":
