@@ -2,12 +2,12 @@ import math
 from datetime import datetime
 from supabase import create_client
 
-# ── SUPABASE CONFIG ─────────────────────────────
-SUPABASE_URL = "https://your-project.supabase.co"
-SUPABASE_KEY = "your-key"
+# SUPABASE CONFIG
+SUPABASE_URL = "https://ylopontyehrurbqqnnnu.supabase.co/"
+SUPABASE_KEY = "sb_publishable_ktc1IB4-v_NieYFGRwAMHQ_2WYPzIet"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ── MATERIAL DATABASE ───────────────────────────
+#MATERIAL DATABASE 
 MAT = {
     "steel": {"E": 200e3, "sy": 250, "rho": 7850},
     "alum": {"E": 69e3, "sy": 276, "rho": 2700},
@@ -15,13 +15,32 @@ MAT = {
     "ci": {"E": 100e3, "sy": 180, "rho": 7200},
 }
 
-# ── INPUT FROM USER ─────────────────────────────
+# Login
+def auth(email,passwd):
+    try:
+        res = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": passwd
+        })
+        if res.user:
+            print(f"\n✅ Logged in as {res.user.email}")
+            return True
+
+    except Exception as e:
+        print("\n❌ Login failed:", str(e))
+        return False
+    return None
+    
+#INPUT FROM USER
 def get_input():
     print("\n🔧 BRACKET STRESS ANALYSIS (CLI)\n")
 
     data = {}
     data["user_email"] = input("Email: ")
-
+    passwd = input("Enter your password: ")
+    if(auth(data["user_email"], passwd)):
+        pass
+    else: return 0
     data["arm_length_mm"] = float(input("Arm Length L1 (mm): "))
     data["arm_height_mm"] = float(input("Arm Height L2 (mm): "))
     data["width_mm"] = float(input("Width b (mm): "))
@@ -37,10 +56,9 @@ def get_input():
     2 → Combined (Bending + Torsion)
     3 → Dynamic
     Select Load Type - '''))
-
     return data
 
-# ── CORE CALCULATION ────────────────────────────
+# CORE CALCULATION
 def compute(d):
     L = d["arm_length_mm"] / 1000
     b = d["width_mm"] / 1000
@@ -94,7 +112,7 @@ def compute(d):
         "verdict": verdict,
     }
 
-# ── DISPLAY RESULTS ─────────────────────────────
+# DISPLAY RESULTS 
 def display(results):
     print("\n📊 RESULTS\n" + "-"*40)
 
@@ -104,14 +122,14 @@ def display(results):
         else:
             print(f"{k:25s}: {v}")
 
-# ── SAVE TO SUPABASE ────────────────────────────
+# SAVE TO SUPABASE
 def save_to_db(input_data, results):
     payload = {**input_data, **results}
 
-    res = supabase.table("your_table_name").insert(payload).execute()
+    res = supabase.table("analysis_runs").insert(payload).execute()
     print("\n💾 Saved to Supabase!")
 
-# ── MAIN ───────────────────────────────────────
+# MAIN
 def main():
     data = get_input()
     results = compute(data)
