@@ -31,7 +31,12 @@ def get_input():
     data["material"] = input("Material: ").lower()
 
     data["load_n"] = float(input("Load (N): "))
-    data["load_type"] = input("Load Type: ")
+    data["load_type"] = int(input('''Load Type:
+    0 → Axial Compression
+    1 → Transverse Load (most common)
+    2 → Combined (Bending + Torsion)
+    3 → Dynamic
+    Select Load Type - '''))
 
     return data
 
